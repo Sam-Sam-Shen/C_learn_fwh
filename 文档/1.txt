@@ -1,0 +1,24 @@
+关键字typedef struct enum
+======================
+编译成可执行文件的调试gdb常用命令
+quit
+跳过两个断点之间的行continue
+run
+step
+逐行：next
+delete
+info breakpoints
+until
+print
+display
+backtrace
+set 
+
+打断点的方式：
+直接打函数名：break main
+打函数名跟行号：break main.c:10
+直接打行号：break 10
+查看断点信息：info breakpoints
+
+=========================
+头文件引入<>跟""区别
