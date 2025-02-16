@@ -22,3 +22,195 @@ set
 
 =========================
 头文件引入<>跟""区别
+==========================
+命名空间namespace 的使用
+namespace std2{
+    int add(int a, int b){
+        return a+b;
+    }
+    float dvide()
+    {
+
+    }
+}
+std2::add(1,2);
+=========================
+C++隐式转换和显示转换(自己转换是隐式转换，自己手动添加转换是显示转换)
+隐式：
+普通数据变量类型转换(float类型的数据转换)
+函数的类型转换(构造函数的类型转换)
+显式：
+static_cast<int>：于基本类型之间的转换
+Derived* derived_ptr = dynamic_cast<Derived*>(base_ptr) ： 于类层次结构中的安全向下转型
+int* non_const_ptr = const_cast<int*>(&const_value);: 于修改对象的 const 或 volatile 属性。
+double* double_ptr = reinterpret_cast<double*>(&num); :将一个指针类型转换为另一个指针类型
+
+int a, b,c;
+int* f = &a;
+
+int s = a + b;
+int d = f + b;
+
+Base b; 0x01
+Base* p; 0x02
+Derived d; 0x03
+
+
+p = &b; 0x02->0x01
+
+Derived* derived_ptr = dynamic_cast<Derived*>(base_ptr);
+================================
+关键字：const(嵌入式 const volatile)，explicit(防止隐式转换)
+
+===================================
+地址有序分布要用数组；
+无序是链表；
+
+=====================
+位运算技巧:异或运算（XOR）是一种按位逻辑运算，使用符号 ^ 表示。异或运算符对两个操作数的每一位进行比较，如果两个位相同，则结果为 0；如果两个位不同，则结果为 1
+场景：找不同 and 交换两数变量值不额外消耗空间
+=======================
+位运算技巧：与&（同1为1） 或|（有1为1） 非~  >> << 
+场景：计算掩码跟权限设置
+=======================
+校验码
+==================
+i++(多一步寄存器操作) ++i的区别
+i++：后置自增，先返回当前值，后增加。
+++i：前置自增，先增加，后返回增加后的值。
+汇编表示：
+i++
+post_increment:
+    push    ebp
+    mov     ebp, esp
+    mov     eax, [ebp + 8]  ; 将参数 i 的值加载到 eax
+    mov     ecx, eax        ; 将 eax 的值复制到 ecx（保存原始值） // ecx 保存原始值
+    add     eax, 1          ; eax = eax + 1（i 的值增加 1）
+    mov     [ebp + 8], eax  ; 将增加后的值写回 i
+    mov     eax, ecx        ; 返回原始值（ecx 中保存的是 i 的原始值） // 返回原始值
+    pop     ebp
+    ret
+++i
+pre_increment:
+    push    ebp
+    mov     ebp, esp
+    mov     eax, [ebp + 8]  ; 将参数 i 的值加载到 eax
+    add     eax, 1          ; eax = eax + 1（i 的值增加 1）
+    mov     [ebp + 8], eax  ; 将增加后的值写回 i
+    mov     eax, eax        ; 返回增加后的值（eax 中已经是增加后的值） // 返回增加后的值
+    pop     ebp
+    ret
+
+===============================
+switch-case 设计模式的工厂模式 面向对象 工厂实体 工头 老板
+
+switch(type)
+{
+    case 1:
+        return new A();
+    case 2:
+        return new B();
+    case 3:
+        return new C();
+    default:
+        return new D();
+}
+设计模式很简单，编程概念 23种
+==========
+goto的场景
+
+代码段
+if(条件)
+    {
+        goto loop;
+    }
+代码段
+
+loop:
+    代码段
+=================================
+return 栈调用，函数保护，信号机制
+主要问题：兼容性问题，部分编译器警告，触发函数未定义行为
+===============================
+指针函数，函数指针
+
+函数指针：
+int (*func_ptr)(int, int);
+func_ptr = add;
+func_ptr(1,2);
+指针函数是一个返回指针（如 int*、char* 等）的函数
+=========================================
+虚函数，析构函数，函数重载，内联函数，静态函数
+
+静态函数- 使用场景和作用域，跨文件调用静态参数和静态函数，静态类有什么区别？
+内联函数inline（静态内联函数static inline，跟命名空间使用的场景）-代码例子理解，使用场景跟作用域，不同之处？
+函数重载- 写代码例子理解
+析构函数（构造函数）- 构造跟析构的顺序
+虚函数(虚函数表，纯虚函数，抽象类，多态，虚析构函数)- 写代码例子理解
+
+
+虚函数关键字virtual
+class Base {
+public:
+    virtual void function() {
+        // 基类中的默认实现
+    }
+};
+编译期不同
+多态：虚函数的主要作用是实现多态。这种特性称为 动态绑定（Dynamic Binding） 或 运行时多态（Runtime Polymorphism）。
+demo:
+class Shape {
+public:
+    virtual ~Shape() = default;  // 虚析构函数 当类不被使用，这个类的资源一定会被销毁
+    // 设计的体量大
+    // 纯虚函数：绘制图形
+    virtual void draw() const = 0; // 纯虚函数，没有函数体，必须被派生类重写，一定要被实现
+};
+
+普通的析构函数：
+class Shape{
+    public:
+        Shape(){
+            // 构造函数   //给这个shape 分配内存开辟位置
+        }
+        ~Shape(){
+            // 析构函数  //不一定会被编译器 释放这个shape 的内存
+        }
+}
+普通析构函数引申出来的一个逻辑问题，如果派生类继承基类，我再释放资源，基类和派生类谁先被释放的问题？
+析构函数的调用顺序：
+基类析构函数先于派生类析构函数执行。
+class Base(){
+    public:
+        Base(){
+            // 构造函数
+            std::cout << "Base gouzao" << std::endl;
+        }
+        ~Base(){
+            // 析构函数
+            std::cout << "Base xigou" << std::endl;
+        }
+}
+class Derived(Base){
+    public:
+        Derived(){
+            // 构造函数
+            std::cout << "Derived gouzao" << std::endl;
+        }
+        ~Derived(){
+            // 析构函数
+            std::cout << "Derived xigou" << std::endl;
+        }
+}
+int main(){
+    Derived d;
+    return 0;
+}
+
+内联函数:减少调用的开销，减少函数调用的开销，提高程序运行效率
+inline int add(int a, int b){
+    return a + b;
+}
+int sum = add(1,2);
+=================================
+extern, global
